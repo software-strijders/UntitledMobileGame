@@ -10,7 +10,7 @@ namespace UntitledMobileGame.Scripts
 
         public override void _PhysicsProcess(float delta)
         {
-            _velocity.y -= Gravity;
+            _velocity.y -= Gravity * delta;
             _velocity = MoveAndSlide(_velocity, Vector3.Up);
         }
     }
