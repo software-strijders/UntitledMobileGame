@@ -11,40 +11,77 @@ namespace UntitledMobileGame.Scripts
 
         private readonly List<Spatial> _moveables;
 
+        private FaceDirection _faceDirection;
+
         public Conveyor()
         {
             _moveables = new List<Spatial>();
+        }
+
+        public override void _Ready()
+        {
+            var rotationsY = RotationDegrees.y <= 0 
+                ? Math.Floor(RotationDegrees.y) 
+                : Math.Ceiling(RotationDegrees.y);
+            
+            // Some stuff is going wrong here 
+            switch (rotationsY)
+            {
+                case 0:
+                    _faceDirection = FaceDirection.Top;
+                    break;
+                case 90:
+                    _faceDirection = FaceDirection.Right;
+                    break;
+                case -180:
+                    _faceDirection = FaceDirection.Bottom;
+                    break;
+                case -90:
+                    _faceDirection = FaceDirection.Left;
+                    break;
+            }
         }
 
         public override void _PhysicsProcess(float delta)
         {
             foreach (var spatial in _moveables)
             {
-                var translation = spatial.Translation;
-
-                // This implementation is pretty naive; it doesn't take into account in which direction the
-                // conveyor is facing. Which means it doesn't work if the conveyor is rotated.
-                switch (Direction)
-                {
-                    case ConveyDirection.Down:
-                        translation.z += 1f * delta;
-                        break;
-                    case ConveyDirection.Up:
-                        translation.z -= 1f * delta;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                spatial.Translation = translation;
+                Convey(spatial, delta);
             }
+        }
+
+        private void Convey(Spatial spatial, float delta)
+        {
+            var translation = spatial.Translation;
+            var amount = 1f * delta;
+            switch (_faceDirection)
+            {
+                case FaceDirection.Top:
+                    translation.z += Direction == ConveyDirection.Down ? amount : -amount;
+                    break;
+                case FaceDirection.Right:
+                    translation.x += Direction == ConveyDirection.Down ? amount : -amount;
+                    break;
+                case FaceDirection.Bottom:
+                    translation.z += Direction == ConveyDirection.Down ? -amount : amount;
+                    break;
+                case FaceDirection.Left:
+                    translation.x += Direction == ConveyDirection.Down ? -amount : amount;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            spatial.Translation = translation;
         }
 
         // ReSharper disable once UnusedMember.Local
         private void OnConveyorBodyEntered(Node body)
         {
+            if (body.IsInGroup("Unmovable")) return;
             if (!(body is Spatial spatial)) return;
-            
+            if (body is Conveyor) return;
+
             _moveables.Add(spatial);
         }
 
@@ -66,5 +103,13 @@ namespace UntitledMobileGame.Scripts
     {
         Up,
         Down,
+    }
+
+    public enum FaceDirection
+    {
+        Left,
+        Right,
+        Top,
+        Bottom,
     }
 }
