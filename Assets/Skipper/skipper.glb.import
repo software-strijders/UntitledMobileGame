@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/skipper.glb-10b8636a24e5d9a1b6793d9106acba5e.scn"
+path="res://.import/skipper.glb-602f50e18aa24496acf03b1c10aaaa00.scn"
 
 [deps]
 
-source_file="res://assets/skipper/skipper.glb"
-dest_files=[ "res://.import/skipper.glb-10b8636a24e5d9a1b6793d9106acba5e.scn" ]
+source_file="res://Assets/Skipper/skipper.glb"
+dest_files=[ "res://.import/skipper.glb-602f50e18aa24496acf03b1c10aaaa00.scn" ]
 
 [params]
 
